@@ -34,10 +34,6 @@ INSERT INTO event_offers (date_start, date_finish, offer_id, offer_name, event_n
 ('2026-02-01', '2026-02-28', 202, 'New Mega Pack', 'event_name_2');
 
 -- Наполнение payments
--- Ожидаемый результат для Задания 1: 
--- ЦА (покупали в event 2): user_id 1, 2, 3. 
--- Из них НЕ покупали в event 1: user_id 2, 3. 
--- Итог: 2/3 = 66.6% (или 0.66)
 INSERT INTO payments (date, user_id, order_id, offer_id, usd_price) VALUES
 ('2026-01-15 10:00:00', 1, 1, 101, 9.99),  
 ('2026-02-10 12:00:00', 1, 2, 201, 9.99),  
@@ -72,10 +68,6 @@ CREATE TABLE events (
 );
 
 -- Наполнение events (используем динамические даты относительно "сегодня", чтобы запрос всегда работал "за вчера")
--- Ожидаемый результат для Задания 2 ("за вчера"):
--- User 1: Сессия 1 (10:00 - 10:40) = 40 мин. Разрыв 40 мин. Сессия 2 (11:20 - 11:30) = 10 мин.
--- User 2: Сессия 1 (15:00 - 15:00) = 0 мин (одно событие).
--- Средняя длина = (40 + 10 + 0) / 3 = 16.66 минут.
 INSERT INTO events (datetime, user_id, event_name) VALUES
 -- События "за вчера" (User 1)
 (CURRENT_DATE - INTERVAL '1 day' + INTERVAL '10:00', 1, 'authorization'),
@@ -97,15 +89,11 @@ INSERT INTO events (datetime, user_id, event_name) VALUES
 
 -- Таблица payments уже создана в Задании 1
 -- Добавим туда данные "за прошлую неделю" для проверки 3-го задания.
--- Допустим, CTE выберет user_id: 1, 2, 3, 4 (всего 4 юзера в анализируемой когорте).
 
 INSERT INTO payments (date, user_id, order_id, offer_id, usd_price) VALUES
--- День 1 прошлой недели (купили 2 юзера из 4 = 50%)
 (CURRENT_DATE - INTERVAL '7 days' + INTERVAL '10:00', 1, 101, 101, 9.99),
 (CURRENT_DATE - INTERVAL '7 days' + INTERVAL '11:00', 2, 102, 101, 9.99),
 
--- День 2 прошлой недели (купил 1 юзер из 4, но 2 раза. Доля = 25%)
 (CURRENT_DATE - INTERVAL '6 days' + INTERVAL '10:00', 1, 103, 101, 9.99),
 (CURRENT_DATE - INTERVAL '6 days' + INTERVAL '15:00', 1, 104, 102, 19.99);
 
--- В остальные дни покупок не было (доля = 0%)
